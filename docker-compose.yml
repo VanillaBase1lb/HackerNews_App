@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  signup:
+    build: ./services/signup
+    ports:
+      - 9899:9899
+    network_mode: "host"
