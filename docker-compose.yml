@@ -3,5 +3,10 @@ services:
   signup:
     build: ./services/signup
     ports:
+      - 9898:9898
+    network_mode: "host"
+  bookmark:
+    build: ./services/bookmark
+    ports:
       - 9899:9899
     network_mode: "host"

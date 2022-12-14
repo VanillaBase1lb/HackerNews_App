@@ -8,3 +8,9 @@ create table users (
     salt char(32) not null,
     primary key (username)
 );
+
+create table bookmarks (
+    username varchar(16) not null,
+    id integer not null,
+    unique (username, id)
+);

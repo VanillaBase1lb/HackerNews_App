@@ -80,3 +80,18 @@ router.post("/login", (req, res) => {
     );
   });
 });
+
+router.get("/logout", (req, res) => {
+  if (!req.session.username) {
+    res.status(400).send({ error: "Not logged in" });
+    return;
+  }
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      res.status(500);
+    } else {
+      res.status(200).send({ message: "User logged out" });
+    }
+  });
+});
