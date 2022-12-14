@@ -47,6 +47,10 @@ router.post("/signup", (req, res) => {
 
 // create a signup route
 router.post("/login", (req, res) => {
+  if (req.session.username) {
+    res.status(400).send({ error: "Already logged in" });
+    return;
+  }
   const { username, password } = req.body;
   connection.connect((err) => {
     // check if username already exists
@@ -66,6 +70,7 @@ router.post("/login", (req, res) => {
             .pbkdf2Sync(password, results[0].salt, 1000, 64, "sha512")
             .toString("hex");
           if (hash === results[0].password_hash) {
+            req.session.username = username;
             res.status(200).send({ message: "User logged in" });
           } else {
             res.status(400).send({ error: "Incorrect password" });
