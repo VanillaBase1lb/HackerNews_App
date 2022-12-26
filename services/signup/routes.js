@@ -12,42 +12,38 @@ router.post("/signup", (req, res) => {
   const hash = crypto
     .pbkdf2Sync(password, salt, 1000, 64, "sha512")
     .toString("hex");
-  connection.connect((err) => {
-    // check if username already exists
-    connection.query(
-      "SELECT COUNT (*) FROM users WHERE username = ?",
-      [username],
-      (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(500);
-        } else if (results[0]["COUNT (*)"] > 0) {
-          console.log(results);
-          res.status(400).send({ error: "Username already exists" });
-        } else {
-          // insert the new user if they do not exist yet
-          connection.query(
-            "INSERT INTO users (username, password_hash, salt) VALUES (?, ?, ?)",
-            [username, hash, salt],
-            (err, _) => {
-              if (err) {
-                console.log(err);
-                res.status(500);
-              } else {
-                // console.log(username, hash, salt);
-                res
-                  .status(200)
-                  .send({
-                    message: "User created",
-                    user: { username: username },
-                  });
-              }
+  // check if username already exists
+  connection.query(
+    "SELECT COUNT (*) FROM users WHERE username = ?",
+    [username],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(500);
+      } else if (results[0]["COUNT (*)"] > 0) {
+        console.log(results);
+        res.status(400).send({ error: "Username already exists" });
+      } else {
+        // insert the new user if they do not exist yet
+        connection.query(
+          "INSERT INTO users (username, password_hash, salt) VALUES (?, ?, ?)",
+          [username, hash, salt],
+          (err, _) => {
+            if (err) {
+              console.log(err);
+              res.status(500);
+            } else {
+              // console.log(username, hash, salt);
+              res.status(200).send({
+                message: "User created",
+                user: { username: username },
+              });
             }
-          );
-        }
+          }
+        );
       }
-    );
-  });
+    }
+  );
 });
 
 // create a signup route
@@ -57,38 +53,34 @@ router.post("/login", (req, res) => {
     return;
   }
   const { username, password } = req.body;
-  connection.connect((err) => {
-    // check if username already exists
-    connection.query(
-      "SELECT * FROM users WHERE username = ?",
-      [username],
-      (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(500);
-        } else if (results.length === 0) {
-          console.log(results);
-          res.status(400).send({ error: "Username does not exist" });
+  // check if username already exists
+  connection.query(
+    "SELECT * FROM users WHERE username = ?",
+    [username],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(500);
+      } else if (results.length === 0) {
+        console.log(results);
+        res.status(400).send({ error: "Username does not exist" });
+      } else {
+        // compare the password hash with the stored hash
+        const hash = crypto
+          .pbkdf2Sync(password, results[0].salt, 1000, 64, "sha512")
+          .toString("hex");
+        if (hash === results[0].password_hash) {
+          req.session.username = username;
+          res.status(200).send({
+            message: "User logged in",
+            user: { username: username },
+          });
         } else {
-          // compare the password hash with the stored hash
-          const hash = crypto
-            .pbkdf2Sync(password, results[0].salt, 1000, 64, "sha512")
-            .toString("hex");
-          if (hash === results[0].password_hash) {
-            req.session.username = username;
-            res
-              .status(200)
-              .send({
-                message: "User logged in",
-                user: { username: username },
-              });
-          } else {
-            res.status(400).send({ error: "Incorrect password" });
-          }
+          res.status(400).send({ error: "Incorrect password" });
         }
       }
-    );
-  });
+    }
+  );
 });
 
 router.get("/logout", (req, res) => {

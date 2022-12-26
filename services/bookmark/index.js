@@ -26,5 +26,5 @@ app.use(cookieParser());
 app.use(router);
 
 app.listen(port, host, () => {
-  console.log(`Server started on port ${port}`);
+  console.log(`Bookmark sercive started on http://localhost:${port}`);
 });
