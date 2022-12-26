@@ -37,7 +37,10 @@ router.post("/signup", (req, res) => {
                 // console.log(username, hash, salt);
                 res
                   .status(200)
-                  .send({ message: "User created", username: username });
+                  .send({
+                    message: "User created",
+                    user: { username: username },
+                  });
               }
             }
           );
@@ -75,7 +78,10 @@ router.post("/login", (req, res) => {
             req.session.username = username;
             res
               .status(200)
-              .send({ message: "User logged in", username: username });
+              .send({
+                message: "User logged in",
+                user: { username: username },
+              });
           } else {
             res.status(400).send({ error: "Incorrect password" });
           }
