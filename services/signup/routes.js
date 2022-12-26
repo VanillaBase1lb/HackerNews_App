@@ -35,7 +35,9 @@ router.post("/signup", (req, res) => {
                 res.status(500);
               } else {
                 // console.log(username, hash, salt);
-                res.status(200).send({ message: "User created" });
+                res
+                  .status(200)
+                  .send({ message: "User created", username: username });
               }
             }
           );
@@ -71,7 +73,9 @@ router.post("/login", (req, res) => {
             .toString("hex");
           if (hash === results[0].password_hash) {
             req.session.username = username;
-            res.status(200).send({ message: "User logged in" });
+            res
+              .status(200)
+              .send({ message: "User logged in", username: username });
           } else {
             res.status(400).send({ error: "Incorrect password" });
           }
