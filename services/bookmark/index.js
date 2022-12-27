@@ -12,6 +12,11 @@ const host = process.env.HNAPP_HOST || "localhost";
 const app = express();
 const sessionStore = new MySQLStore({}, connection);
 
+app.all("*", (_req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 app.use(bodyParser.json());
 app.use(
   session({
