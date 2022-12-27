@@ -1,7 +1,7 @@
 -- create database hnapp;
 -- create user 'dbuser'@'localhost' identified by 'password';
 -- grant all on hnapp.* to 'dbuser'@'localhost';
--- use hnapp;
+use hnapp;
 
 create table users (
     username varchar(16) not null,
