@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { router } from "./routes.js";
 import { connection } from "./database.js";
 import { default as session } from "express-session";
@@ -12,11 +13,7 @@ const host = process.env.HNAPP_HOST || "localhost";
 const app = express();
 const sessionStore = new MySQLStore({}, connection);
 
-app.all("*", (_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
+app.use(cors());
 app.use(bodyParser.json());
 app.use(
   session({
